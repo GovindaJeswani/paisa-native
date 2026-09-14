@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -17,13 +17,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png",
         "backgroundColor": "#6366F1"
       },
       "package": "com.paisa.app",
       "permissions": [
-        "READ_SMS",
-        "RECEIVE_SMS",
         "CAMERA",
         "NOTIFICATIONS"
       ],
@@ -37,14 +37,13 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/notification-icon.png",
           "color": "#6366F1"
         }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "paisa-native"
+        "projectId": "9d2059f9-830c-4198-8b1d-199471889cb5"
       }
     }
   }

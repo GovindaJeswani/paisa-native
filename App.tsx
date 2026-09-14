@@ -21,9 +21,11 @@ import {
   BackHandler,
   AppState,
   Platform,
+  Linking,
   type AppStateStatus,
 } from "react-native";
 import { WebView, type WebViewMessageEvent } from "react-native-webview";
+import * as WebBrowser from "expo-web-browser";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
@@ -184,19 +186,33 @@ export default function App() {
         mediaPlaybackRequiresUserAction={false}
         mixedContentMode="compatibility"
         cacheEnabled
-        // Handle external links
+        // Allow third-party cookies for auth
+        thirdPartyCookiesEnabled
+        sharedCookiesEnabled
+        // Open Google auth in external browser, everything else in WebView
         onShouldStartLoadWithRequest={(request) => {
-          // Allow WhatsApp share, Google login, and the main app
-          if (
-            request.url.startsWith(PAISA_URL) ||
-            request.url.includes("accounts.google.com") ||
-            request.url.includes("firebaseapp.com") ||
-            request.url.includes("wa.me") ||
-            request.url.includes("whatsapp.com")
-          ) {
-            return true;
+          const url = request.url;
+
+          // Google OAuth — must open in external browser, WebView is blocked by Google
+          if (url.includes("accounts.google.com") || url.includes("googleapis.com/identitytoolkit")) {
+            Linking.openURL(url);
+            return false;
           }
-          return false;
+
+          // Firebase auth redirect
+          if (url.includes("firebaseapp.com/__/auth")) {
+            Linking.openURL(url);
+            return false;
+          }
+
+          // WhatsApp share
+          if (url.includes("wa.me") || url.includes("whatsapp.com")) {
+            Linking.openURL(url);
+            return false;
+          }
+
+          // Allow the main app and everything else inside WebView
+          return true;
         }}
       />
     </SafeAreaView>
