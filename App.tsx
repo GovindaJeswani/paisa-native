@@ -182,36 +182,26 @@ export default function App() {
         allowFileAccess
         allowsBackForwardNavigationGestures
         startInLoadingState={false}
-        setSupportMultipleWindows={false}
         mediaPlaybackRequiresUserAction={false}
         mixedContentMode="compatibility"
         cacheEnabled
+        // Auth fix: allow popups so Google login works inside WebView
+        setSupportMultipleWindows={true}
+        javaScriptCanOpenWindowsAutomatically={true}
         // Allow third-party cookies for auth
         thirdPartyCookiesEnabled
         sharedCookiesEnabled
-        // Open Google auth in external browser, everything else in WebView
+        // User agent: pretend to be Chrome so Google doesn't block OAuth
+        userAgent="Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+        // Handle external links
         onShouldStartLoadWithRequest={(request) => {
           const url = request.url;
-
-          // Google OAuth — must open in external browser, WebView is blocked by Google
-          if (url.includes("accounts.google.com") || url.includes("googleapis.com/identitytoolkit")) {
-            Linking.openURL(url);
-            return false;
-          }
-
-          // Firebase auth redirect
-          if (url.includes("firebaseapp.com/__/auth")) {
-            Linking.openURL(url);
-            return false;
-          }
-
-          // WhatsApp share
+          // WhatsApp share — open externally
           if (url.includes("wa.me") || url.includes("whatsapp.com")) {
             Linking.openURL(url);
             return false;
           }
-
-          // Allow the main app and everything else inside WebView
+          // Everything else stays in WebView (including Google auth)
           return true;
         }}
       />
